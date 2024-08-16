@@ -1,0 +1,437 @@
+@startuml
+
+top to bottom direction
+skinparam linetype ortho
+
+package "logica" {
+    class Alien {
+        - contadorImagen: int
+        - tipo : AlienTipo
+        + getImage(): String
+        + getImagenEntidadViva(): String
+        + calcularPuntaje(): int
+    }
+    enum AlienTipo {
+        - puntaje: int
+        ALIEN_BUHO(Constantes.PUNTAJE_ALIEN_3)
+        ALIEN_BULDOG(Constantes.PUNTAJE_ALIEN_2)
+        ALIEN_CHITA(Constantes.PUNTAJE_ALIEN_CHITA)
+        + getPuntaje(): int
+    }
+    class ColmenaDeAliens {
+        - estaYendoHaciaLaDerecha: boolean
+        - esPrimeraImagenDelAlien: boolean
+        - velocidad: int
+        - matrizAliensMuertos: int[]
+        - random: Random
+        - numeroTotalAliens: int
+        - contadorDeNumeroDeSonidosAliens: int
+        - spaceInvaders: SpaceInvaders
+        - numFilasColmena: int
+        - numColumnasColmena: int
+        - colmenaDeAliens: Alien[][]
+
+        + ColmenaDeAliens(spaceInvaders: SpaceInvaders, numFilas: int, numColumnas: int)
+        + getNumFilasColmena(): int
+        + getNumColumnasColmena(): int
+        + desplazarAliens(): void
+        + proyectilImpactaNave(proyectil: Proyectil): void
+        + elegirAlienParaDisparar(): int[]
+        + getNumeroTotalAliens(): int
+        + obtenerPosicionAlienigenaMasBajo(): int
+        + getColmenaDeAliens(): Alien[][]
+
+        - crearColmenaDeAliens(): void
+        - determinarTipoDeAlienPorFila(fila: int): AlienTipo
+        - obtenerImagenesPorFila(fila: int): List<String>
+        - moverAliensEnDireccion(): void
+        - moverAliens(cambioEnX: int): void
+        - cambiarDireccionYBajarColmenaSiEsNecesario(): void
+        - estaTocandoBorde(): boolean
+        - estaTocandoBordeIzquierdo(): boolean
+        - estaTocandoBordeDerecho(): boolean
+        - moverColmenaHaciaAbajo(): void
+        - aumentarVelocidad(): void
+        - eliminarAlienMuerto(matrizAliensMuertos: int[]): void
+        - registrarAlienMuerto(fila: int, columna: int): void
+        - emitirSonidoAlien(): void
+    }
+
+
+    class Constantes <<final>>{
+        + ANCHO_VENTANA: int = 600
+        + ALTURA_VENTANA: int = 600
+        + MARGEN_VENTANA: int = 50
+        + ANCHO_NAVE: int = 32
+        + ALTO_NAVE: int = 24
+        + X_POSICION_INICIAL_NAVE: int = (ANCHO_VENTANA - ANCHO_NAVE) / 2
+        + Y_POSICION_INICIAL_NAVE: int = 490
+        + ESPACIO_DESPLAZAMIENTO_X_NAVE_ESPACIAL: int = 1
+        + LIMITE_IZQUIERDO_NAVE: int = 60
+        + LIMITE_DERECHO_NAVE: int = 500
+        + ANCHO_ALIEN: int = 30
+        + ALTURA_ALIEN: int = 30
+        + ALTURA_INICIAL_ALIENIGENA: int = 120
+        + POSICION_INICIAL_EN_X_ALIENIGENAS: int = 29 + MARGEN_VENTANA
+        + ESPACIO_VERTICAL_ENTRE_FILAS_ALIENIGENAS: int = 40
+        + ESPACIO_HORIZONTAL_ENTRE_COLUMNAS_ALIENIGENAS: int = 10
+        + CAMBIO_EN_X_DX_ALIEN: int = 2
+        + CAMBIO_EN_Y_DY_ALIEN: int = 20
+        + VELOCIDAD_ALIENIGENAS: int = 3
+        + ANCHO_PROYECTIL: int = 3
+        + ALTO_PROYECTIL: int = 13
+        + UNIDADES_DE_DESPLAZAMIENTOS: int = 4
+        + DIMENSIONES_DE_BLOQUE_DE_ESCUDO: int = 2
+        + ANCHO_ESCUDO: int = 72
+        + ALTO_ESCUDO: int = 54
+        + POSICION_Y_ESCUDO: int = 400
+        + POSICION_X_PRIMER_ESCUDO: int = 20
+        + ESPACIO_DE_SEPARACION_ENTRE_ESCUDOS: int = 20
+        + ANCHO_DISPARO_ALIEN: int = 5
+        + ALTO_DISPARO_ALIEN: int = 15
+        + ESPACIO_DE_DESPLAZAMIENTO_EN_Y_DISPARO_ALIEN: int = 3
+        + ANCHO_NAVE_NODRIZA: int = 42
+        + ALTO_NAVE_NODRIZA: int = 22
+        + POS_X_INICIAL_NAVE_NODRIZA: int = ANCHO_VENTANA
+        + POS_Y_NAVE_NODRIZA: int = 50
+        + ESPACIO_DE_DESPLAZAMIENTO_EN_Y_NAVE_NODRIZA: int = 1
+        + PUNTAJE_ALIEN_3: int = 50
+        + PUNTAJE_ALIEN_2: int = 40
+        + PUNTAJE_ALIEN_CHITA: int = 20
+        + PUNTAJE_NAVE_NODRIZA: int = 100
+    }
+
+
+
+    class DisparoAlien{
+        - random: Random
+        - spaceInvaders: SpaceInvaders
+        + DisparoAlien(matrizPosicionALien: int[], spaceInvaders: SpaceInvaders)
+        + desplazarProyectil(): int
+        + dibujarProyectil(g: Graphics): void
+        + obtenerImpactoConEscudo(): int[]
+        + detectarImpactoConEscudo(arregloEscudos: Escudo[]): void
+        + detectarImpactoNave(naveEspacial: NaveEspacial): boolean
+        # estaElDisparoALaAlturaDeLosEscudos(): boolean
+        # determinarEscudoDeImpacto(): int
+        # calcularPosicionXEscudo(columna: int): int
+        # obtenerAbscisaDeImpactoConEscudo(escudo: Escudo): int
+        + static detectarImpacto(entity1: Entidad, entity2: Entidad): boolean
+        + static manejarImpacto(projectil: Entidad, naveEspacial: NaveEspacial): void
+    }
+
+    abstract class Entidad {
+        - ancho: int
+        - alto: int
+        - xPos: int
+        - yPos: int
+        - cambioX: int
+        - cambioY: int
+        - estaVivo: boolean
+        - strImg1: String
+        - strImg2: String
+        - strImg3: String
+        - imageIcon: ImageIcon
+        - img: Image
+        + Entidad()
+        + getAncho(): int
+        + setAncho(ancho: int): void
+        + getAlto(): int
+        + getxPos(): int
+        + setxPos(xPos: int): void
+        + getyPos(): int
+        + setyPos(yPos: int): void
+        + getCambioX(): int
+        + setCambioX(cambioX: int): void
+        + isEstaVivo(): boolean
+        + setEstaVivo(estaVivo: boolean): void
+        + getStrImg1(): String
+        + getStrImg2(): String
+        + moverEntidadFueraPantalla(): void
+    }
+
+
+    class Escudo {
+        - numeroDeFilasEnEscudo: int
+        - numeroDeColumnasEnEscudo: int
+        - matrizEscudo: boolean[][]
+        + Escudo(xPos: int)
+        + determinarColumnaDondeImpactoMisilEnElEscudo(posicionXProyectil: int): int
+        + encontrarFilaDondeSeEncuentraElBloque(columna: int): int
+        + romperBloques(posicionXProyectil: int): void
+        + encontrarBloqueSuperior(columna: int): int
+        + romperBloquesDesdeArriba(posXDisparoAlien: int): void
+        + getNumeroDeFilasEnEscudo(): int
+        + getNumeroDeColumnasEnEscudo(): int
+        + getMatrizEscudo(): boolean[][]
+        + getXPos(): int
+        + getYPos(): int
+        - crearEscudo(): void
+        - vaciarBloques(filaInicio: int, filaFin: int, columnaInicio: int, columnaFin: int): void
+        - eliminarBloques(fila: int, columna: int): void
+        - eliminarBloquesDesdeArribaEnLaMatrizBooleanDelEscudo(fila: int, columna: int): void
+    }
+
+
+    class NaveEspacial{
+        - contador: int
+        + NaveEspacial()
+        + desplazarNave(): int
+        + destruirNave(): void
+        + estaVivo(): boolean
+        + setEstaVivo(estado: boolean): void
+    }
+
+
+    class NaveNodriza{
+        - contador: int
+        + musicaNaveNodriza: Audio
+        + musicaNaveNodrizaDestruida: Audio
+        + NaveNodriza()
+        + desplazarNave(): int
+        + actualizarEstado(): void
+        + estaVivo(): boolean
+        - actualizarContadorXPosicion(): void
+        - restablecerNave(): void
+    }
+
+
+    abstract class Proyectil{
+        - estaDisparando: boolean
+        - spaceInvaders: SpaceInvaders
+        + Proyectil(spaceInvaders: SpaceInvaders)
+        + isEstaDisparando(): boolean
+        + setEstaDisparando(estaDisparando: boolean): void
+        + desplazarProyectil(): int
+        + destruirAlien(alien: Alien): boolean
+        + detectarEscudoDeImpacto(): int[]
+        + proyectilDestruyeEscudo(arregloEscudos: Escudo[]): void
+        + proyectilImpactoNaveNodriza(naveNodriza: NaveNodriza): boolean
+        + abstract dibujarProyectil(g: Graphics): void
+        - isImpacto(alien: int, alien1: int, alien2: int, alien3: int): boolean
+        - estaElProyectilALaAlturaDeEscudo(): boolean
+        - numeroEscudoEncontrado(): int
+        - obtenerAbscisaDeImpactoProyectilConEscudo(escudo: Escudo): int
+    }
+
+
+    class SpaceInvaders {
+        - naveEspacial: NaveEspacial
+        - colmenaDeAliens: ColmenaDeAliens
+        - proyectil: Proyectil
+        - naveNodriza: NaveNodriza
+        - escudos: Escudo[]
+        - score: int
+        - disparosAliens: List<DisparoAlien>
+        + numeroDeEscudos: int = 5
+        + SpaceInvaders()
+        + getNumeroDeEscudos(): int
+        + getNaveEspacial(): NaveEspacial
+        + getColmenaDeAliens(): ColmenaDeAliens
+        + getProyectil(): Proyectil
+        + getNaveNodriza(): NaveNodriza
+        + getEscudo(index: int): Escudo
+        + getEscudos(): Escudo[]
+        + getScore(): int
+        + getArregloEscudosLogica(): Escudo[]
+        + setProyectil(proyectil: Proyectil): void
+        + setColmenaDeAliens(nuevaColmena: ColmenaDeAliens): void
+        + setNaveNodriza(naveNodriza: NaveNodriza): void
+        + setScore(score: int): void
+        + manejarDisparosAliens(): void
+        - agregarDisparosAliens(): void
+        - procesarDisparoAlien(disparo: DisparoAlien, disparosEliminar: List<DisparoAlien>): void
+    }
+
+
+    class TeclasDeMovimiento implements KeyListener {
+         - TIEMPO_ENTRE_DISPAROS_MS: int = 750
+         - timer: Timer
+         - puedeDisparar: boolean
+         + TeclasDeMovimiento()
+         + keyPressed(e: KeyEvent): void
+         + keyReleased(e: KeyEvent): void
+         + keyTyped(arg0: KeyEvent): void
+     }
+
+}
+
+package "presentacion" {
+    class AlienView {
+        - image1: String
+        - image2: String
+        - alien: Alien
+        - contadorImagen: int
+        + AlienView(alien: Alien)
+        + AlienView(image1: String, image2: String)
+        + getImages(): List<String>
+        + static filaImagenesAlien(fila: int): AlienView
+        + dibujarAlien(g: Graphics): void
+        - actualizarImagen(): void
+    }
+
+    class Audio {
+        - clip: Clip
+        - alienSounds: List<String>
+        + Audio(sonido: String)
+        + Audio()
+        + reproducirAlienSonido(soundIndex: int): void
+        + play(): void
+        + stop(): void
+        + static playSound(sonido: String): void
+    }
+
+    class ColmenaDeAliensView {
+        - colmenaDeAliens: ColmenaDeAliens
+        + ColmenaDeAliensView(colmenaDeAliens: ColmenaDeAliens)
+        + dibujarColmenaDeAliens(g: Graphics): void
+    }
+
+
+    class EscudoView extends JPanel {
+        + NO_COLOR: Color
+        - escudoLogica: Escudo
+        + EscudoView(escudoLogica: Escudo)
+        + paintComponent(g: Graphics): void
+        + dibujarEscudo(g: Graphics): void
+    }
+
+
+    class ManejadorDeEventosRepintar implements Runnable {
+        - intervaloDeActualizacion: int = 5
+        + static contadorDeIteraciones: int = 0
+        - corriendo: boolean = true
+        + detener(): void
+        + run(): void
+    }
+
+
+    class GameViewManager extends JPanel {
+        - logic: SpaceInvaders
+        - naveEspacialP: NaveEspacialView
+        - colmenaDeAliensP: ColmenaDeAliensView
+        - arregloEscudosPresentacion: EscudoView[]
+        - naveNodrizaP: NaveNodrizaView
+        - ventana: JFrame
+        - ventanaCerrada: boolean
+        - manejadorDeEventosRepintar: ManejadorDeEventosRepintar
+        - hiloRepintado: Thread
+        - fuentePuntuacion: Font
+        - fuenteTexto: Font
+        - fondo: Image
+        - disparosAliens: List<DisparoAlien>
+        + GameViewManager(logic: SpaceInvaders, ventana: JFrame)
+        + paintComponent(g: Graphics): void
+        - manejarDisparosAliens(g: Graphics): void
+        - detenerJuego(): void
+    }
+
+
+    class NaveEspacialView {
+        - naveEspacial: NaveEspacial
+        - img: Image
+        - imageIcon: ImageIcon
+        - contador: int = 0
+        + NaveEspacialView(naveEspacial: NaveEspacial)
+        + dibujarNave(g: Graphics): void
+        - cargarImagenes(): void
+        - destruirNave(): void
+    }
+
+    class NaveNodrizaView {
+        - naveNodriza: NaveNodriza
+        - imageIcon: ImageIcon
+        - img: Image
+        + NaveNodrizaView(naveNodriza: NaveNodriza)
+        + dibujarNave(g: Graphics): void
+        + actualizarImagen(): void
+    }
+
+    class ProyectilNaveEspacialView {
+        + ProyectilNaveEspacialView(spaceInvaders: SpaceInvaders, xPos: int, yPos: int, estaDisparando: boolean)
+        + dibujarProyectil(g: Graphics): void
+    }
+
+
+    class ProyectilView {
+        - imageIcon: ImageIcon
+        - img: Image
+        + ProyectilView(spaceInvaders: SpaceInvaders, proyectilLogica: Proyectil)
+        + dibujarProyectil(g: Graphics): void
+    }
+
+
+    class VentanaMenu {
+        + static spaceInvaders: SpaceInvaders
+        + static gameViewManager: GameViewManager
+        + static ventana: JFrame
+        + static juego: boolean = true
+        + VentanaMenu()
+        + static resetearJuego(): void
+        + static main(args: String[]): void
+        - static ejecutarPrograma(): void
+    }
+
+    class Main {
+        + main(String[]): void
+    }
+}
+
+Alien                       -[#000082,plain]-^  Entidad
+AlienView                   --> "alien\n1" Alien
+ColmenaDeAliens             --> "colmenaDeAliens\n*" Alien
+
+ColmenaDeAliensView         --> "colmenaDeAliens\n1" ColmenaDeAliens
+DisparoAlien                -[#000082,plain]-^  Proyectil
+Escudo                      -[#000082,plain]-^  Entidad
+EscudoView                  --> "escudoLogica\n1" Escudo
+
+GameViewManager             --> "colmenaDeAliensP\n1" ColmenaDeAliensView
+GameViewManager            --> "disparosAliens\n*" DisparoAlien
+
+GameViewManager             --> "arregloEscudosPresentacion\n*" EscudoView
+GameViewManager             -l->  ManejadorDeEventosRepintar : "«create»"
+GameViewManager             --> "naveEspacialP\n1" NaveEspacialView
+
+GameViewManager             --> "naveNodrizaP\n1" NaveNodrizaView
+
+GameViewManager             --> "logic\n1" SpaceInvaders
+
+SpaceInvaders               -l->  TeclasDeMovimiento
+NaveEspacial                -[#000082,plain]-^  Entidad
+NaveEspacialView            --> "naveEspacial\n1" NaveEspacial
+NaveNodriza                 -[#000082,plain]-^  Entidad
+NaveNodrizaView             --> "naveNodriza\n1" NaveNodriza
+Proyectil                   -[#000082,plain]--^  Entidad
+ProyectilView               -[#000082,plain]-^  Proyectil
+ProyectilNaveEspacialView               -[#000082,plain]-^  Proyectil
+SpaceInvaders               --> "colmenaDeAliens\n1" ColmenaDeAliens
+SpaceInvaders               --> "disparosAliens\n*" DisparoAlien
+SpaceInvaders               --> "escudos\n*" Escudo
+SpaceInvaders               --> "naveEspacial\n1" NaveEspacial
+SpaceInvaders               --> "naveNodriza\n1" NaveNodriza
+SpaceInvaders               --> "proyectil\n1" Proyectil
+Alien ..> AlienTipo
+ColmenaDeAliens ..> AlienTipo
+VentanaMenu                 --> "gameViewManager\n1" GameViewManager
+VentanaMenu                 --> "spaceInvaders\n1" SpaceInvaders
+Main                        --> VentanaMenu
+Alien ..> Constantes
+ColmenaDeAliens ..> Constantes
+DisparoAlien ..> Constantes
+Escudo ..> Constantes
+NaveEspacial ..> Constantes
+Proyectil ..> Constantes
+SpaceInvaders ..> Constantes
+TeclasDeMovimiento ..> Constantes
+EscudoView ..> Constantes
+GameViewManager ..> Constantes
+VentanaMenu ..> Constantes
+ColmenaDeAliens --> Audio
+DisparoAlien --> Audio
+Escudo --> Audio
+NaveNodriza --> Audio
+Proyectil --> Audio
+TeclasDeMovimiento --> Audio
+
+@enduml

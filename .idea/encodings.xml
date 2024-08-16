@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/src/logica/Alien.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/src/logica/Chateau.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/src/logica/ColmenaDeAliens.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/src/logica/DisparoAlien.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/logica/Escudo.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/src/logica/NaveEspacial.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/src/logica/NaveNodriza.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/src/logica/Proyectil.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/src/logica/Soucoupe.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/src/logica/TirAlien.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/src/logica/TirVaisseau.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/src/presentacion/GameViewManager.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/src/presentacion/Main.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/src/presentacion/ManejadorDeEventosRepintar.java" charset="windows-1252" />
+  </component>
+</project>
